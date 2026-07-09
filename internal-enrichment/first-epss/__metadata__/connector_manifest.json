@@ -8,6 +8,9 @@
     "Vulnerability & Exploit Awareness",
     "Enrichment & Analysis"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": null,
   "playbook_supported": true,

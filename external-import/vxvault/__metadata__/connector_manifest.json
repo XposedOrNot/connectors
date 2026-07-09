@@ -7,6 +7,9 @@
   "use_cases": [
     "Open Source Threat Intel"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": "2026-04-09",
   "playbook_supported": false,

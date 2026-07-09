@@ -8,6 +8,9 @@
     "Vulnerability & Exploit Awareness",
     "Commercial Threat Intel"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": "2025-06-12",
   "playbook_supported": false,

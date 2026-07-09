@@ -1,12 +1,15 @@
 {
   "title": "Chronicle",
   "slug": "chronicle",
-  "description": "Information coming soon",
-  "short_description": "Information coming soon",
+  "description": "The Chronicle connector streams OpenCTI threat intelligence data to Google Chronicle reference lists for threat detection and investigation purposes.",
+  "short_description": "The Chronicle connector streams OpenCTI threat intelligence data to Google Chronicle reference lists for threat detection and investigation purposes.",
   "logo": "stream/chronicle/__metadata__/logo.png",
   "use_cases": [
     "SIEM and Analytics"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": null,
   "playbook_supported": false,

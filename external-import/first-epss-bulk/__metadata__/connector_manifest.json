@@ -1,12 +1,15 @@
 {
   "title": "FIRST EPSS Bulk",
   "slug": "first-epss-bulk",
-  "description": "Information coming soon",
-  "short_description": "Information coming soon",
+  "description": "The FIRST EPSS connector imports EPSS (Exploit Prediction Scoring System) scores for CVE vulnerabilities into OpenCTI.",
+  "short_description": "The FIRST EPSS connector imports EPSS (Exploit Prediction Scoring System) scores for CVE vulnerabilities into OpenCTI.",
   "logo": "external-import/first-epss-bulk/__metadata__/logo.png",
   "use_cases": [
     "Vulnerability & Exploit Awareness"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": false,
   "last_verified_date": null,
   "playbook_supported": false,

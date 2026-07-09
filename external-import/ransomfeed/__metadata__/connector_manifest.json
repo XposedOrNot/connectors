@@ -8,6 +8,9 @@
     "Threat Intelligence",
     "Open Source Threat Intel"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": false,
   "last_verified_date": null,
   "playbook_supported": false,

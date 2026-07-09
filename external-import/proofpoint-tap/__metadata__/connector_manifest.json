@@ -9,6 +9,9 @@
     "Incident Response & Ticketing",
     "Phishing"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": null,
   "playbook_supported": false,

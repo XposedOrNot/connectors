@@ -9,6 +9,9 @@
     "Endpoint Detection and Response",
     "Detection & Response Enablement"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": "2025-12-04",
   "playbook_supported": false,

@@ -7,6 +7,9 @@
   "use_cases": [
     "Detection & Response Enablement"
   ],
+  "solution_categories": [],
+  "license_type": null,
+  "contact": null,
   "verified": true,
   "last_verified_date": "2025-06-15",
   "playbook_supported": false,
