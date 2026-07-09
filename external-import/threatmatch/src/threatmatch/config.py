@@ -1,6 +1,6 @@
-import datetime
 import os
 import warnings
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -10,6 +10,7 @@ from pydantic import (
     HttpUrl,
     PlainSerializer,
     TypeAdapter,
+    field_validator,
     model_validator,
 )
 from pydantic_core.core_schema import SerializationInfo
@@ -53,17 +54,17 @@ def iso_string_validator(value: str) -> datetime:
     if isinstance(value, str):
         try:
             # Convert presumed ISO string to datetime object
-            dt = datetime.datetime.fromisoformat(value)
+            dt = datetime.fromisoformat(value)
             return (
-                dt.astimezone(tz=datetime.UTC)
+                dt.astimezone(tz=timezone.utc)
                 if dt.tzinfo
-                else dt.replace(tzinfo=datetime.UTC)
+                else dt.replace(tzinfo=timezone.utc)
             )
         except ValueError:
             # If not a datetime ISO string, try to parse it as timedelta with pydantic first
-            duration = TypeAdapter(datetime.timedelta).validate_python(value)
+            duration = TypeAdapter(timedelta).validate_python(value)
             # Then return a datetime minus the value
-            return datetime.datetime.now(datetime.UTC) - duration
+            return datetime.now(timezone.utc) - duration
     return value
 
 
@@ -74,10 +75,10 @@ ListFromString = Annotated[
 ]
 
 DatetimeFromIsoString = Annotated[
-    datetime.datetime,
+    datetime,
     BeforeValidator(iso_string_validator),
     # Replace the default serializer as it uses Z -> +00:00 offset
-    PlainSerializer(datetime.datetime.isoformat, when_used="json"),
+    PlainSerializer(datetime.isoformat, when_used="json"),
 ]
 
 
@@ -86,33 +87,77 @@ class _BaseSettings(BaseSettings):
 
 
 class _OpenCTIConfig(_BaseSettings):
-    url: HttpUrl
-    token: str
+    url: HttpUrl = Field(description="Base URL of your OpenCTI instance.")
+    token: str = Field(
+        description="OpenCTI platform token (typically the admin token)."
+    )
 
 
 class _ConnectorConfig(_BaseSettings):
-    id: str
+    id: str = Field(description="A UUID v4 to identify the connector in OpenCTI.")
 
-    name: str = Field(default="ThreatMatch")
-    type: str = "EXTERNAL_IMPORT"
-    scope: ListFromString = Field(default=["threatmatch"])
-    log_level: str = Field(default="error")
-    duration_period: datetime.timedelta = Field(default=datetime.timedelta(days=1))
+    name: str = Field(default="ThreatMatch", description="The name of the connector.")
+    type: str = Field(
+        default="EXTERNAL_IMPORT", description="The type of the connector."
+    )
+    scope: ListFromString = Field(
+        default=["threatmatch"], description="The scope of the connector."
+    )
+    log_level: Literal["debug", "info", "warn", "warning", "error"] = Field(
+        description="The minimum level of logs to display.",
+        default="error",
+    )
+    duration_period: timedelta = Field(
+        default=timedelta(days=1),
+        description="Polling frequency as an ISO-8601 duration (e.g., 'P1D').",
+    )
 
 
 class _Threatmatch(_BaseSettings):
-    client_id: str
-    client_secret: str
-
-    url: HttpUrl = Field(default=HttpUrl("https://eu.threatmatch.com"))
-    import_from_date: DatetimeFromIsoString = Field(default=datetime.timedelta(days=30))
-    import_profiles: bool = Field(default=True)
-    import_alerts: bool = Field(default=True)
-    import_iocs: bool = Field(default=True)
-    tlp_level: Literal["white", "clear", "green", "amber", "amber+strict", "red"] = (
-        Field(default="amber")
+    client_id: str = Field(
+        description="ThreatMatch OAuth2 client id (Client Credentials)."
     )
-    threat_actor_as_intrusion_set: bool = Field(default=True)
+    client_secret: str = Field(description="ThreatMatch OAuth2 client secret.")
+
+    url: HttpUrl = Field(
+        default=HttpUrl("https://eu.threatmatch.com"),
+        description="Base URL of the ThreatMatch API.",
+    )
+    import_from_date: DatetimeFromIsoString | None = Field(
+        default=None,
+        description=(
+            "Relative ISO-8601 duration (e.g., 'P30D') used to set the first import "
+            "window. Applied on the first run only."
+        ),
+    )
+    import_profiles: bool = Field(
+        default=True, description="Import the ThreatMatch profiles dataset."
+    )
+    import_alerts: bool = Field(
+        default=True, description="Import the ThreatMatch alerts dataset."
+    )
+    import_iocs: bool = Field(
+        default=True, description="Import the ThreatMatch IOCs dataset."
+    )
+    tlp_level: Literal["white", "clear", "green", "amber", "amber+strict", "red"] = (
+        Field(
+            default="amber",
+            description="Default TLP marking applied when missing on source objects.",
+        )
+    )
+    threat_actor_as_intrusion_set: bool = Field(
+        default=True,
+        description="Map ThreatMatch threat-actor objects to STIX intrusion-set.",
+    )
+
+    @field_validator("import_from_date", mode="before")
+    def _convert_import_from_date_relative_to_utc_datetime(
+        cls, value: None | str
+    ) -> datetime | str:
+        """Allow relative import_from_date values (timedelta)."""
+        if value is None:
+            return datetime.now(tz=timezone.utc) - timedelta(days=30)
+        return value
 
 
 class ConnectorSettings(_BaseSettings):
